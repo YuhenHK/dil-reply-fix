@@ -1,6 +1,6 @@
 /*
- * ChatGPT GPT-6 DIL 回复修复 - Chromium Manifest V3
- * 由已验证的 Tampermonkey v1.1.4 迁移。
+ * DIL Reply Fix - Chromium Manifest V3
+ * 基于先前的 Tampermonkey 修复脚本迁移；v1.1.5 为品牌与说明更新。
  *
  * 迁移点：MAIN world 直接访问页面 window，无需 unsafeWindow / Tampermonkey。
  * 行为：监听历史 GET 响应，组装 fallbackMarkdown，恢复失败的 DIL 回复。
@@ -652,5 +652,5 @@
 
     snapshotRoots();
     startObserver();
-    log('GPT-6 DIL 浏览器扩展 v1.1.4 loaded');
+    log('DIL Reply Fix v1.1.5 loaded');
 })();
