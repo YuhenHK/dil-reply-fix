@@ -25,33 +25,38 @@
 
 ## 安装（Brave / Chrome / Edge）
 
-1. 点击 GitHub 的 **Code → Download ZIP** 并解压，或克隆本仓库。
+1. 下载上方 `dist/GPT6_DIL_Fix_Extension_v1.1.4.zip` 固定安装包并解压。
 2. 打开扩展管理页面：
    - Brave：`brave://extensions`
    - Chrome：`chrome://extensions`
    - Edge：`edge://extensions`
 3. 开启 **开发者模式**，点击 **加载已解压的扩展程序**。
-4. 选择包含 `manifest.json` 的仓库根目录。
+4. 选择解压后包含 `manifest.json` 的 **`GPT6_DIL_Fix_Extension` 文件夹**。
 5. **禁用 Tampermonkey 中旧的 GPT-6 修复脚本**，避免重复监听或重复注入。
 6. 刷新 ChatGPT，使用此前出现“无法加载此回复”的历史对话验证。
 
 更新：从 GitHub 获取新版本并覆盖本地扩展目录后，在扩展管理页点击 **刷新**，再重新加载 ChatGPT。
 
-## 安装包 SHA-256
+## 固定版本安装包与校验值
 
-此前在 ChatGPT 中提供的独立安装压缩包：`GPT6_DIL_Fix_Extension_v1.1.4.zip`
+**推荐下载：** [GPT6_DIL_Fix_Extension_v1.1.4.zip](https://github.com/YuhenHK/chatgpt-gpt6-dil-fix/blob/main/dist/GPT6_DIL_Fix_Extension_v1.1.4.zip)（在 GitHub 文件页面点击 **Download raw file** 下载）。
+
+此 ZIP 已作为固定二进制文件提交到本仓库的 `dist/GPT6_DIL_Fix_Extension_v1.1.4.zip`，由仓库当前的 `manifest.json` 和 `content.js` 生成，包含额外的 `INSTALL.txt`。安装包为 **v1.1.4 测试版**，仍有偶发 Bug。
+
+- **文件大小：** 29,856 字节
+- **SHA-256：**
 
 ```text
-SHA-256  f46441a93b253f7f4a0942f7f2281b2a656006bedef3694fc33d5afe03b3f6f8
+80b0c57098142027c930ff0de485657fb8b80034360829d6e2d2dbb35f5bf9d8
 ```
 
-此值是对**此前提供的原始插件安装 ZIP** 计算得到的，仅用于验证该文件。GitHub 的 **Code → Download ZIP** 是动态生成的源码包，文件内容及 SHA-256 与原安装 ZIP 不一定相同，不能使用上述校验值验证 GitHub 自动生成的 ZIP。
-
-Windows PowerShell 校验本地原安装包：
+Windows PowerShell 验证下载文件：
 
 ```powershell
 Get-FileHash .\GPT6_DIL_Fix_Extension_v1.1.4.zip -Algorithm SHA256
 ```
+
+上述哈希只对应仓库 `dist/` 下的这一份固定安装包，**不适用于** GitHub 的 **Code → Download ZIP** 自动源码压缩包。版本更新时应另建文件名，不覆盖已发布的原文件，以便校验保持稳定。
 
 ## 工作原理
 
@@ -85,7 +90,9 @@ Get-FileHash .\GPT6_DIL_Fix_Extension_v1.1.4.zip -Algorithm SHA256
 chatgpt-gpt6-dil-fix/
 ├── manifest.json    # Manifest V3 配置
 ├── content.js       # 回复解析、分组及 DOM 恢复
-└── README.md        # 项目说明
+├── README.md        # 项目说明
+└── dist/
+    └── GPT6_DIL_Fix_Extension_v1.1.4.zip  # 固定安装包及上方 SHA-256
 ```
 
 ## 已知限制
