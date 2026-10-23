@@ -247,8 +247,9 @@ ChatGPT 历史对话切换通常不触发整页刷新。当前脚本：
 
 ```json
 {
-  "run_at": "document_start",
-  "world": "MAIN",
+  "manifest_version": 3,
+  "name": "DIL Reply Fix",
+  "version": "1.1.5",
   "content_scripts": [{
     "matches": ["https://chatgpt.com/*", "https://chat.openai.com/*"],
     "js": ["content.js"],
@@ -259,7 +260,7 @@ ChatGPT 历史对话切换通常不触发整页刷新。当前脚本：
 }
 ```
 
-**注意**：上面仅强调关键字段；它不是可直接替代仓库完整 `manifest.json` 的配置。以仓库源码为准。
+**注意**：这里省略了扩展描述等非关键字段；实际配置以仓库完整 `manifest.json` 为准。
 
 在 `MAIN` world 里，`window` 就是网页共享的 JS 环境，脚本能包装页面的 `fetch` 和 `XMLHttpRequest`。**不再需要 `unsafeWindow`**。
 
