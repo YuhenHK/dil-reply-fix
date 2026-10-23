@@ -1,97 +1,79 @@
 # DIL Reply Fix
 
-> **Unofficial browser extension. Not affiliated with, endorsed by, or sponsored by OpenAI.**
+一个适用于 Brave、Chrome 和 Edge 的非官方浏览器扩展，用于解决 ChatGPT 中部分 GPT-6 历史回复出现“无法加载此回复”、正文无法正常显示的问题。
 
-DIL Reply Fix 是一个独立开发的 Chromium 浏览器扩展，用于尝试恢复 **ChatGPT 中部分 GPT-6 历史回复显示失败**（例如“无法加载此回复”）时，浏览器已收到但未正常渲染的 Markdown 正文。
+**当前版本：v1.1.5（测试版）**。已在 Brave 中实际验证：插件可以利用页面已收到的备用内容恢复回复正文，并显示常见 Markdown 格式。少数对话首次打开时可能未完整显示，刷新页面通常可以恢复。复杂的原生交互组件目前无法完全还原。
 
-**当前版本：v1.1.5（测试版）**。已在 Brave 中实际验证，可恢复因显示异常而无法正常查看的 GPT-6 历史回复，并保留常见 Markdown 排版。部分对话首次加载时可能显示不完整，通常刷新页面即可恢复；复杂的原生交互组件尚不完全支持。
+## 下载与安装
 
-## 下载和安装
+**[下载 DIL Reply Fix v1.1.5 安装包](dist/DIL_Reply_Fix_v1.1.5.zip)**（进入 GitHub 文件页后点击 **Download raw file**）
 
-**推荐：下载固定版本压缩包，而不是 GitHub 自动生成的源码 ZIP。**
+[SHA-256 校验文件](dist/SHA256SUMS.txt) · [版本记录](CHANGELOG.md) · [开源许可证](LICENSE)
 
-- **[DIL Reply Fix v1.1.5 安装包](dist/DIL_Reply_Fix_v1.1.5.zip)**
-- [SHA-256 校验文件](dist/SHA256SUMS.txt)
-- [版本更新记录](CHANGELOG.md)
-- [MIT 许可证](LICENSE)
-
-v1.1.5 安装包大小：**31,003 字节**。对应 SHA-256：
+安装包大小：31,003 字节。**SHA-256：**
 
 ```text
 8ff5be6ed89ed57295d6795ed07676249c1f6296971638e32253e00528679be1
 ```
 
-Windows PowerShell 校验：
+Windows PowerShell 校验命令：
 
 ```powershell
 Get-FileHash .\DIL_Reply_Fix_v1.1.5.zip -Algorithm SHA256
 ```
 
-1. 下载上方 v1.1.5 ZIP 并解压。
-2. Brave 打开 `brave://extensions`；Chrome 打开 `chrome://extensions`；Edge 打开 `edge://extensions`。
-3. 启用**开发者模式**，选择“**加载已解压的扩展程序**”。
-4. 选择解压后的 `DIL_Reply_Fix` 文件夹（文件夹内应有 `manifest.json`）。
-5. **关闭原来的 Tampermonkey 同类修复脚本**，避免重复拦截。
-6. 刷新 ChatGPT 页面，打开出现过显示问题的历史对话进行测试。
+1. 下载 ZIP 并解压至固定文件夹。
+2. 打开浏览器的扩展管理页面：Brave 为 `brave://extensions`，Chrome 为 `chrome://extensions`，Edge 为 `edge://extensions`。
+3. 开启**开发者模式**，点击**加载已解压的扩展程序**。
+4. 选择解压后包含 `manifest.json` 的 `DIL_Reply_Fix` 文件夹。
+5. 如果使用过同类 Tampermonkey 脚本，先将其禁用，避免重复执行。
+6. 刷新 ChatGPT 页面，打开此前显示异常的历史对话验证效果。
 
-后续更新插件时，请先更新本地扩展文件夹，再在扩展管理页面点击“刷新”，最后重新加载 ChatGPT。
+升级版本时，替换本地扩展文件夹中的文件，再到扩展管理页面刷新扩展，最后重新加载 ChatGPT。
 
-## 功能与工作方式
+## 功能与适用范围
 
-- 在 `chatgpt.com`、`chat.openai.com` 页面启动时注入 Manifest V3 内容脚本。
-- 在浏览器页面环境中监听 GET 响应，读取已有的 `fallbackMarkdown`。
-- 仅针对识别出的 GPT-6 回复尝试恢复文本，在官方 DIL 无法正常显示时渲染备用 Markdown。
-- 支持基础标题、列表、表格、引用、代码块、粗体、斜体和链接。
-- 当官方内容可以正常显示时，优先使用官方渲染结果。
-- 无需后台 Service Worker，也未申请额外的浏览器扩展 API 权限。
+- **恢复历史回复**：当部分 GPT-6 回复的官方显示区域加载失败时，显示浏览器已经收到的备用 Markdown 正文。
+- **保留基础排版**：支持标题、粗体、斜体、列表、表格、引用、代码块和常见链接。
+- **优先使用官方显示**：如果页面能够正常显示原回复，就不需要使用备用正文。
+- **本地运行**：不需要 Tampermonkey、后台服务或额外的扩展 API 权限。
 
-**说明：** 这是面向特定显示故障的临时修复，不是通用聊天备份工具，也无法完整替代 ChatGPT 的富 UI、附件交互或所有 Markdown 特性。
+目前主要用于历史回复的文本显示恢复，不是聊天备份或批量导出工具。对复杂的富交互内容支持有限，且 ChatGPT 页面结构更新后可能需要适配。
 
-## 适用范围与局限
+**遇到显示不完整时**，可先刷新页面（`Ctrl + R`）。如果出现重复内容或位置错乱，请检查是否同时运行了旧版脚本或其他同类扩展。
 
-- **恢复效果**：针对部分 GPT-6 历史回复的 DIL 显示问题，可还原正文及常见 Markdown 格式。
-- **加载情况**：少数对话首次打开时可能未完整显示，刷新页面（`Ctrl + R`）通常可以恢复。
-- **功能边界**：以正文恢复为主，不能完全还原 ChatGPT 的原生富交互组件；网站更新也可能影响兼容性。
-- **使用提示**：若遇到重复内容或显示错位，可先检查是否同时启用了其他同类脚本，再刷新页面。
+欢迎在 Issues 中反馈可复现的问题。请勿提交未脱敏的聊天截图、完整网络响应、HAR 文件或账号凭证。
 
-欢迎通过 Issues 反馈可复现的问题，**但不要公开上传含有个人聊天内容的 HAR 文件、完整网络响应、令牌或未脱敏截图**。
+## 隐私与工作原理
 
-## 隐私与使用风险
+扩展仅在 `chatgpt.com` 和 `chat.openai.com` 运行。它使用 Chromium Manifest V3 的页面脚本注入方式，读取 ChatGPT 的 GET 文本响应，提取其中的 `fallbackMarkdown`，在需要时渲染为页面内容。
 
-- 安装包和仓库不包含开发者的聊天记录、账号凭证或预置的个人资料。
-- 目前代码不含主动向第三方服务器发送聊天内容的功能，也不将聊天记录写入持久化存储。
-- **运行时插件能读取匹配页面的 GET 文本响应，其中可能包含你的个人聊天内容。** 现有监听范围比单独监听特定历史消息接口更广。
-- `world: "MAIN"` 使内容脚本与页面 JavaScript 共享执行环境。因此，“没有申请扩展额外权限”不表示它无权读取页面内容。
-- 软件没有得到 OpenAI 的授权或背书；使用仍可能受到 ChatGPT 服务条款限制。**不保证不存在账户限制或其他风险。**
+- **数据处理范围**：运行期间可能接触包含个人聊天内容的网络响应，目前监听范围不只限于单个历史对话接口。
+- **数据处理方式**：当前源码没有向第三方上传聊天内容或将聊天记录写入持久化存储的功能；恢复过程在本地页面内完成。
+- **权限说明**：虽然未申请额外扩展 API 权限，但插件仍可以访问其所运行页面中的相关数据。
 
-使用前建议审查源码，并在浏览器中自行决定是否安装。
+建议在安装前查看 [content.js](content.js) 和 [manifest.json](manifest.json)，确认其行为符合你的使用预期。
 
-## 名称、商标与非官方声明
+## 项目说明
 
-**DIL Reply Fix 为独立项目，并非 OpenAI 官方产品。** 本项目与 OpenAI 没有隶属、合作、赞助或认可关系。
+**非官方项目**：DIL Reply Fix 由个人独立维护，与 OpenAI 没有隶属、合作或赞助关系，也未获得其官方认可。文中出现的 ChatGPT、GPT 等名称仅用于说明软件适用平台和模型，相关商标归其权利人所有。使用时仍应遵守相关服务条款。
 
-`ChatGPT`、`GPT` 及相关名称属于其各自权利人；项目提及这些名称仅用于说明适用平台、模型标识和兼容性，不表示获得官方授权。请勿使用官方标志或将本项目描述为官方修复工具。
+**作者与开发方式**：作者并非专业开发人员，目前不具备独立编写和审查代码的专业能力。项目主要通过 AI 辅助开发，并结合实际使用测试逐步调整。欢迎其他开发者审查源码、提出建议或提交改进。
 
-## 作者与开源说明
-
-**作者不是专业软件开发人员，不具备独立编写、审查或维护软件代码的专业能力。** 本项目由作者提出需求、提供测试与反馈，并借助 AI 生成和修改代码。因此，作者无法提供专业级别的安全性、正确性、兼容性或持续维护保证。
-
-本项目以 [MIT License](LICENSE) 提供。它允许其他人在遵守许可证条件的情况下使用、修改和分发源码，但**不能代替 OpenAI 服务条款，也不代表 OpenAI 对扩展的认可或许可**。
+**许可**：项目采用 [MIT License](LICENSE)，允许在遵守许可证条款的前提下使用、修改和分发代码。
 
 ## 项目文件
 
 ```text
-dil-reply-fix/
-├── manifest.json        # Manifest V3 配置
-├── content.js           # 回复数据解析与页面恢复逻辑
-├── README.md            # 项目文档
-├── CHANGELOG.md         # 版本记录
-├── LICENSE              # MIT License
-└── dist/
-    ├── DIL_Reply_Fix_v1.1.5.zip
-    ├── GPT6_DIL_Fix_Extension_v1.1.4.zip
-    └── SHA256SUMS.txt
+manifest.json             # 扩展配置
+content.js                # 回复恢复逻辑
+README.md                 # 使用说明
+CHANGELOG.md              # 版本记录
+LICENSE                   # MIT 许可证
+dist/
+  DIL_Reply_Fix_v1.1.5.zip          # 当前安装包
+  GPT6_DIL_Fix_Extension_v1.1.4.zip # 历史安装包
+  SHA256SUMS.txt                    # 固定安装包校验值
 ```
 
-之前的 v1.1.4 历史 ZIP 会继续保留，但**新用户应优先下载 v1.1.5**。每个固定 ZIP 的哈希均列在 [SHA256SUMS.txt](dist/SHA256SUMS.txt)；这些哈希不适用于 GitHub **Code → Download ZIP** 自动生成的源码包。
-
+旧版安装包保留用于版本对照。上面的 SHA-256 对应固定版本安装包，不适用于 GitHub **Code → Download ZIP** 自动生成的源码压缩包。
