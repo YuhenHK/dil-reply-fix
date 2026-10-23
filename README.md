@@ -44,6 +44,14 @@ Get-FileHash .\DIL_Reply_Fix_v1.1.5.zip -Algorithm SHA256
 
 欢迎在 Issues 中反馈可复现的问题。请勿提交未脱敏的聊天截图、完整网络响应、HAR 文件或账号凭证。
 
+## DIL Runner 网络加载问题
+
+在一次 GPT-6 原生回复显示失败的排查中，发现 `cdn.platform.openai.com` 的 `runner-*.js` 请求返回 **403 Forbidden**，响应为 HTML 而非 JavaScript。更换可正常访问该资源的网络线路后，原生回复恢复显示，无需重新生成。
+
+遇到类似情况，可在浏览器开发者工具的 **Network** 面板搜索 `runner-`，检查请求状态。使用支持域名分流的代理软件时，可检查 `cdn.platform.openai.com` 对应线路。
+
+**两种方法作用不同**：恢复 Runner 网络访问可以让 ChatGPT 使用原生 DIL 渲染；本扩展则在原生显示失败时，尝试使用 `fallbackMarkdown` 恢复正文。
+
 ## 隐私与工作原理
 
 扩展仅在 `chatgpt.com` 和 `chat.openai.com` 运行。它使用 Chromium Manifest V3 的页面脚本注入方式，读取 ChatGPT 的 GET 文本响应，提取其中的 `fallbackMarkdown`，在需要时渲染为页面内容。
@@ -58,7 +66,7 @@ Get-FileHash .\DIL_Reply_Fix_v1.1.5.zip -Algorithm SHA256
 
 **非官方项目**：DIL Reply Fix 由个人独立维护，与 OpenAI 没有隶属、合作或赞助关系，也未获得其官方认可。文中出现的 ChatGPT、GPT 等名称仅用于说明软件适用平台和模型，相关商标归其权利人所有。使用时仍应遵守相关服务条款。
 
-**作者与开发方式**：作者并非专业开发人员，目前不具备独立编写和审查代码的专业能力。项目主要通过 AI 辅助开发，并结合实际使用测试逐步调整。欢迎其他开发者审查源码、提出建议或提交改进。
+**作者与开发方式**：项目主要通过 AI 辅助开发，并结合实际使用测试逐步调整。欢迎其他开发者审查源码、提出建议或提交改进。
 
 **许可**：项目采用 [MIT License](LICENSE)，允许在遵守许可证条款的前提下使用、修改和分发代码。
 
