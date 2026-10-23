@@ -8,7 +8,7 @@
 
 **[下载 DIL Reply Fix v1.1.5 安装包](dist/DIL_Reply_Fix_v1.1.5.zip)**（进入 GitHub 文件页后点击 **Download raw file**）
 
-[SHA-256 校验文件](dist/SHA256SUMS.txt) · [版本记录](CHANGELOG.md) · [开源许可证](LICENSE)
+[SHA-256 校验文件](dist/SHA256SUMS.txt) · [版本记录](CHANGELOG.md) · [技术调查与开发踩坑](DEVELOPMENT_NOTES.md) · [开源许可证](LICENSE)
 
 安装包大小：31,003 字节。**SHA-256：**
 
@@ -69,6 +69,7 @@ manifest.json             # 扩展配置
 content.js                # 回复恢复逻辑
 README.md                 # 使用说明
 CHANGELOG.md              # 版本记录
+DEVELOPMENT_NOTES.md      # 调查过程、实现踩坑与改进建议
 LICENSE                   # MIT 许可证
 dist/
   DIL_Reply_Fix_v1.1.5.zip          # 当前安装包
