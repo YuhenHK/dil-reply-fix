@@ -1,1 +1,76 @@
-# chatgpt-gpt6-dil-fix
+# ChatGPT GPT-6 DIL Reply Fix
+
+用于恢复 ChatGPT 历史对话中无法正常显示的 GPT-6 回复的 **Chromium Manifest V3 浏览器扩展**。
+
+> **状态：v1.1.4，个人测试版。** 扩展已通过静态检查；在具体浏览器及新版 ChatGPT 页面中的表现仍需实际测试。项目当前保存在私有仓库。
+
+## 功能
+
+- 从 ChatGPT 历史 GET 文本响应中提取 `fallbackMarkdown`；
+- 根据 GPT-6 模型标识与回复分组恢复失败的 DIL 正文；
+- 支持常见 Markdown：标题、列表、表格、代码块、引用、粗体、斜体和链接；
+- 隐藏出错的官方 DIL；当官方内容恢复正常时撤销临时恢复内容；
+- 不需要 Tampermonkey、后台 Service Worker 或额外扩展 API 权限。
+
+> 这不是通用 Markdown 渲染器；复杂嵌套格式、富 UI 组件及下载链接的实际行为仍受浏览器与 ChatGPT 页面影响。
+
+## 安装（Brave / Chrome / Edge）
+
+1. 点击 GitHub 的 **Code → Download ZIP** 并解压，或克隆本仓库。
+2. 打开扩展管理页面：
+   - Brave：`brave://extensions`
+   - Chrome：`chrome://extensions`
+   - Edge：`edge://extensions`
+3. 开启 **开发者模式**，点击 **加载已解压的扩展程序**。
+4. 选择包含 `manifest.json` 的仓库根目录。
+5. **禁用 Tampermonkey 中旧的 GPT-6 修复脚本**，避免重复监听或重复注入。
+6. 刷新 ChatGPT，使用此前出现“无法加载此回复”的历史对话验证。
+
+更新：从 GitHub 获取新版本并覆盖本地扩展目录后，在扩展管理页点击 **刷新**，再重新加载 ChatGPT。
+
+## 工作原理
+
+`manifest.json` 在 `chatgpt.com` 与 `chat.openai.com` 的页面启动时，以 `world: "MAIN"` 注入 `content.js`。脚本包装网页环境中的 `fetch` 和 `XMLHttpRequest`，解析 GET 文本响应中的 fallback 数据，按回复结束标记分组，并在 DIL 显示失败时构造 DOM 作为临时正文。
+
+代码与数据处理都在本机页面内执行；不会修改 ChatGPT 服务器数据，也不会主动额外请求历史聊天。
+
+## 隐私与权限
+
+- **不内置聊天记录、账号凭证或个人信息**。
+- **没有内置向第三方上传聊天内容的代码**，也没有持久化存储聊天记录的功能。
+- **仅匹配 ChatGPT 的两个域名**，不注入其他网站。
+- **运行时可以读取 ChatGPT 页面上的 GET 文本响应**，其中可能包含个人聊天信息。该能力是恢复历史回复所需，但当前监听范围比只监听特定历史对话 API 更宽。
+- 没有申请 `permissions` 或 `host_permissions`，但 `content_scripts.matches` 与 `MAIN` 环境仍使其可以访问匹配页面的数据；**不应理解为无法读取聊天内容**。
+
+源码适合自己检查；不要把包含聊天数据的浏览器开发者工具日志、截图或网络响应提交到公开仓库。
+
+## 排查
+
+**安装提示“清单文件缺失”**：应选择包含 `manifest.json` 的文件夹，而不是 ZIP 本身或上一层目录。
+
+**安装后无效果**：确认已刷新 ChatGPT、油猴旧脚本已禁用、目标确实是 GPT-6 历史回复且网页响应包含 `fallbackMarkdown`。
+
+**出现重复正文或其他回复错位**：停用扩展、刷新页面，并记录重现步骤。不要直接发布原始网络响应，因为可能包含私密对话。
+
+**如何查看日志**：本地将 `content.js` 中的 `const DEBUG = false` 改成 `true`，在扩展管理页刷新扩展，然后在 ChatGPT 的开发者工具 Console 中筛选 `[GPT6-Fix]`。请在分享前删除日志中的敏感正文。
+
+## 项目结构
+
+```text
+chatgpt-gpt6-dil-fix/
+├── manifest.json    # Manifest V3 配置
+├── content.js       # 回复解析、分组及 DOM 恢复
+└── README.md        # 项目说明
+```
+
+## 已知限制
+
+- 依赖 ChatGPT 当前的网络响应、DIL 数据结构和 CSS 类名，网站更新后可能失效；
+- 仅用于页面内临时恢复失败内容，不是聊天备份或数据导出工具；
+- Markdown 回退渲染不能完全替代 ChatGPT 原生富 UI；
+- 浏览器端实际下载 `sandbox:` 链接的行为，需要以实际页面验证为准；
+- 尚未在所有 Chromium 版本、所有对话分支与混合模型对话中实测。
+
+## 开发说明
+
+这是个人用途的修复项目，当前未选择开源许可证。**私有仓库不会因存在 README 而自动公开**。
