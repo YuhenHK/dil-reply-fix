@@ -277,7 +277,50 @@ ChatGPT 历史对话切换通常不触发整页刷新。当前脚本：
 
 这带来两类成本：**额外解析/内存负担**，以及**接触不必要的页面数据**。如果缩小到已验证的会话接口，应先记录目标请求的真实 URL/方法/响应结构，防止重演“过滤过严导致抓不到数据”的问题。不要根据想象硬编码端点。
 
-## 8. 开发者优先改进清单
+## 8. DIL Runner CDN 加载故障调查（2026-10-23）
+
+### 8.1 原生渲染失败的网络证据
+
+**[观察]** 在部分 GPT-6 回复显示“无法加载此回复”时，页面已经收到包含 `fallbackMarkdown` 的回复数据，但独立的 DIL Runner 脚本请求失败：
+
+```text
+GET https://cdn.platform.openai.com/assets/dil/runner-*.js
+403 Forbidden
+server: cloudflare
+content-type: text/html; charset=UTF-8
+```
+
+浏览器同时报告来自 `Origin: null` 的模块请求被 CORS 拦截。该次响应返回的是 HTML 错误内容，而不是 Runner JavaScript，因此无法通过该请求加载执行模块。
+
+**[实测]** 更换到能够正常获取 Runner 的网络出口后，同一批此前无法显示的历史回复恢复了 ChatGPT 原生 DIL 渲染，无需重新生成。此次故障的 Runner 可访问性与渲染结果存在直接的对照证据。
+
+### 8.2 扩展内本地 Runner 替换实验
+
+曾测试将官方 CDN 的 Runner 请求改为读取扩展内的本地文件：
+
+| 实验 | 方法 | 结果 |
+| --- | --- | --- |
+| v0.1 | 按异常响应尝试本地替换 | 原生渲染未恢复 |
+| v0.2 | 对指定 Runner URL 强制重定向 | 请求发生 307 内部重定向，但原生渲染未恢复 |
+
+v0.2 的 Network Headers 中确认：
+
+```http
+307 Internal Redirect
+Location: chrome-extension://.../runner-*.js
+Non-Authoritative-Reason: WebRequest API
+```
+
+**[观察]** 重定向规则确实触发，但未证实本地 Runner 成功执行；后续仍观察到原始 CDN 请求报错。因此该实验没有形成可用的原生渲染修复方法。
+
+### 8.3 与正文恢复机制的关系
+
+- **网络路径修复**：当 Runner 请求被拒绝时，恢复其访问可能使 ChatGPT 原生 DIL 渲染恢复。
+- **本项目的 `fallbackMarkdown` 修复**：在原生 DIL 无法显示时，利用浏览器已收到的备用文本恢复可读正文。
+
+这两种方法处理的是不同层面的故障；当前扩展并不修改 CDN 请求，也不包含官方 Runner 文件。
+
+## 9. 开发者优先改进清单
 
 以下是建议方向，不是已经实现或验证的新功能。按照收益与风险排序：
 
@@ -292,7 +335,7 @@ ChatGPT 历史对话切换通常不触发整页刷新。当前脚本：
 
 **不建议优先做的事情**：未观察到实际问题就叠加多个恢复通道、复杂缓存哈希、无限轮询或大量防御性状态。先解决数据归属、触发时序和渲染边界这三个主要问题更实际。
 
-## 9. 建议的回归测试矩阵
+## 10. 建议的回归测试矩阵
 
 | 场景 | 理想结果 / 关注点 |
 | --- | --- |
@@ -311,13 +354,13 @@ ChatGPT 历史对话切换通常不触发整页刷新。当前脚本：
 | 无 `fallbackMarkdown` 的响应 | 安全跳过；不冒用其他历史正文 |
 | 慢速加载、页面 DOM 重绘 | 观察能否恢复，以及是否重复插入 |
 
-## 10. 提交 Issue / PR 时怎样提供有用信息
+## 11. 提交 Issue / PR 时怎样提供有用信息
 
 推荐包含：浏览器及版本、扩展版本、失败是否仅发生在 GPT-6 历史回复、是否可通过刷新恢复、是否同时安装了同类脚本、**脱敏后的**关键响应字段名 / 选择器是否仍存在、从“页面导航 → fallback 到达 → 恢复显示”的简要计时。
 
 **不要公开**：Cookie、Authorization、会话令牌、完整 API 响应、完整个人聊天、原始 HAR、私密附件下载地址及含个人信息的截图。最好的复现材料是合成 JSON + 简化 DOM + 最短复现步骤。
 
-## 11. 本文与仓库源码的关系
+## 12. 本文与仓库源码的关系
 
 - **可以直接在源码中核对**：`manifest.json`；`content.js` 中的 `scanObject`、`parseNetworkText`、`composeGroup`、`rebuildGroups`、`renderMarkdown`、`applyRecovery`、`recoverFailedRoots`、`reconcileRoot`、`resetConversation` 与 GET Hook。
 - **来自先前浏览器调试交流**：CSP 拦截、错误节点、错选约 999 字内容、两组长度变化、过程消息误选、时间点样本、`undefined` 与粗体下载链接等。
