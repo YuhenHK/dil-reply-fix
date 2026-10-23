@@ -1,112 +1,97 @@
-# ChatGPT GPT-6 DIL Reply Fix
+# DIL Reply Fix
 
-用于恢复 ChatGPT 历史对话中无法正常显示的 GPT-6 回复的 **Chromium Manifest V3 浏览器扩展**。
+> **Unofficial browser extension. Not affiliated with, endorsed by, or sponsored by OpenAI.**
 
-> **状态：v1.1.4，仍有已知 Bug，非完全稳定版。** 已在 Brave 浏览器实际使用，但有时仍会发生异常；大多数情况下刷新 ChatGPT 页面后可以恢复。不能保证每次都正常。项目目前保存在私有仓库。
+DIL Reply Fix 是一个独立开发的 Chromium 浏览器扩展，用于尝试恢复 **ChatGPT 中部分 GPT-6 历史回复显示失败**（例如“无法加载此回复”）时，浏览器已收到但未正常渲染的 Markdown 正文。
 
-## 当前已知问题（请先阅读）
+**当前版本：v1.1.5 Beta（测试版）**。已在 Brave 中进行实际使用测试，**仍有偶发 Bug**：部分对话可能出现异常，刷新页面后大多数情况下可以恢复，但不能保证每次成功。它不是 OpenAI 官方修复方案。
 
-- **偶发异常**：扩展并非每次都能正确恢复回复，个别情况下可能出现显示异常。
-- **临时处理方法**：刷新 ChatGPT 页面（例如按 `Ctrl + R`）；根据当前使用反馈，**多数情况下刷新后可以恢复**，但并不保证全部成功。
-- **问题状态**：尚未定位完整触发条件，也未完成彻底修复。在问题解决前请将本项目视为测试版，不应将其宣传为完全稳定。
-- 如果要反馈问题，请描述出现时的操作步骤及刷新是否有效，避免上传包含私人聊天内容的完整网络日志。
+## 下载和安装
 
+**推荐：下载固定版本压缩包，而不是 GitHub 自动生成的源码 ZIP。**
 
+- **[DIL Reply Fix v1.1.5 安装包](dist/DIL_Reply_Fix_v1.1.5.zip)**
+- [SHA-256 校验文件](dist/SHA256SUMS.txt)
+- [版本更新记录](CHANGELOG.md)
+- [MIT 许可证](LICENSE)
 
-## 功能
-
-- 从 ChatGPT 历史 GET 文本响应中提取 `fallbackMarkdown`；
-- 根据 GPT-6 模型标识与回复分组恢复失败的 DIL 正文；
-- 支持常见 Markdown：标题、列表、表格、代码块、引用、粗体、斜体和链接；
-- 隐藏出错的官方 DIL；当官方内容恢复正常时撤销临时恢复内容；
-- 不需要 Tampermonkey、后台 Service Worker 或额外扩展 API 权限。
-
-> 这不是通用 Markdown 渲染器；复杂嵌套格式、富 UI 组件及下载链接的实际行为仍受浏览器与 ChatGPT 页面影响。
-
-## 安装（Brave / Chrome / Edge）
-
-1. 下载上方 `dist/GPT6_DIL_Fix_Extension_v1.1.4.zip` 固定安装包并解压。
-2. 打开扩展管理页面：
-   - Brave：`brave://extensions`
-   - Chrome：`chrome://extensions`
-   - Edge：`edge://extensions`
-3. 开启 **开发者模式**，点击 **加载已解压的扩展程序**。
-4. 选择解压后包含 `manifest.json` 的 **`GPT6_DIL_Fix_Extension` 文件夹**。
-5. **禁用 Tampermonkey 中旧的 GPT-6 修复脚本**，避免重复监听或重复注入。
-6. 刷新 ChatGPT，使用此前出现“无法加载此回复”的历史对话验证。
-
-更新：从 GitHub 获取新版本并覆盖本地扩展目录后，在扩展管理页点击 **刷新**，再重新加载 ChatGPT。
-
-## 固定版本安装包与校验值
-
-**推荐下载：** [GPT6_DIL_Fix_Extension_v1.1.4.zip](https://github.com/YuhenHK/chatgpt-gpt6-dil-fix/blob/main/dist/GPT6_DIL_Fix_Extension_v1.1.4.zip)（在 GitHub 文件页面点击 **Download raw file** 下载）。
-
-此 ZIP 已作为固定二进制文件提交到本仓库的 `dist/GPT6_DIL_Fix_Extension_v1.1.4.zip`，由仓库当前的 `manifest.json` 和 `content.js` 生成，包含额外的 `INSTALL.txt`。安装包为 **v1.1.4 测试版**，仍有偶发 Bug。
-
-- **文件大小：** 29,856 字节
-- **SHA-256：**
+v1.1.5 安装包大小：**31,003 字节**。对应 SHA-256：
 
 ```text
-80b0c57098142027c930ff0de485657fb8b80034360829d6e2d2dbb35f5bf9d8
+8ff5be6ed89ed57295d6795ed07676249c1f6296971638e32253e00528679be1
 ```
 
-Windows PowerShell 验证下载文件：
+Windows PowerShell 校验：
 
 ```powershell
-Get-FileHash .\GPT6_DIL_Fix_Extension_v1.1.4.zip -Algorithm SHA256
+Get-FileHash .\DIL_Reply_Fix_v1.1.5.zip -Algorithm SHA256
 ```
 
-上述哈希只对应仓库 `dist/` 下的这一份固定安装包，**不适用于** GitHub 的 **Code → Download ZIP** 自动源码压缩包。版本更新时应另建文件名，不覆盖已发布的原文件，以便校验保持稳定。
+1. 下载上方 v1.1.5 ZIP 并解压。
+2. Brave 打开 `brave://extensions`；Chrome 打开 `chrome://extensions`；Edge 打开 `edge://extensions`。
+3. 启用**开发者模式**，选择“**加载已解压的扩展程序**”。
+4. 选择解压后的 `DIL_Reply_Fix` 文件夹（文件夹内应有 `manifest.json`）。
+5. **关闭原来的 Tampermonkey 同类修复脚本**，避免重复拦截。
+6. 刷新 ChatGPT 页面，打开出现过显示问题的历史对话进行测试。
 
-## 工作原理
+后续更新插件时，请先更新本地扩展文件夹，再在扩展管理页面点击“刷新”，最后重新加载 ChatGPT。
 
-`manifest.json` 在 `chatgpt.com` 与 `chat.openai.com` 的页面启动时，以 `world: "MAIN"` 注入 `content.js`。脚本包装网页环境中的 `fetch` 和 `XMLHttpRequest`，解析 GET 文本响应中的 fallback 数据，按回复结束标记分组，并在 DIL 显示失败时构造 DOM 作为临时正文。
+## 功能与工作方式
 
-代码与数据处理都在本机页面内执行；不会修改 ChatGPT 服务器数据，也不会主动额外请求历史聊天。
+- 在 `chatgpt.com`、`chat.openai.com` 页面启动时注入 Manifest V3 内容脚本。
+- 在浏览器页面环境中监听 GET 响应，读取已有的 `fallbackMarkdown`。
+- 仅针对识别出的 GPT-6 回复尝试恢复文本，在官方 DIL 无法正常显示时渲染备用 Markdown。
+- 支持基础标题、列表、表格、引用、代码块、粗体、斜体和链接。
+- 当官方内容可以正常显示时，优先使用官方渲染结果。
+- 无需后台 Service Worker，也未申请额外的浏览器扩展 API 权限。
 
-## 隐私与权限
+**说明：** 这是面向特定显示故障的临时修复，不是通用聊天备份工具，也无法完整替代 ChatGPT 的富 UI、附件交互或所有 Markdown 特性。
 
-- **不内置聊天记录、账号凭证或个人信息**。
-- **没有内置向第三方上传聊天内容的代码**，也没有持久化存储聊天记录的功能。
-- **仅匹配 ChatGPT 的两个域名**，不注入其他网站。
-- **运行时可以读取 ChatGPT 页面上的 GET 文本响应**，其中可能包含个人聊天信息。该能力是恢复历史回复所需，但当前监听范围比只监听特定历史对话 API 更宽。
-- 没有申请 `permissions` 或 `host_permissions`，但 `content_scripts.matches` 与 `MAIN` 环境仍使其可以访问匹配页面的数据；**不应理解为无法读取聊天内容**。
+## 已知 Bug 与临时处理
 
-源码适合自己检查；不要把包含聊天数据的浏览器开发者工具日志、截图或网络响应提交到公开仓库。
+- **偶发异常**：部分对话的恢复过程可能失败或显示错误。
+- **临时解决办法**：刷新 ChatGPT 页面（`Ctrl + R`）。根据实际测试反馈，大多数情况下能够恢复，但不保证始终有效。
+- **未根治**：可能受到 ChatGPT 网络响应、DOM 结构、对话分支和其他脚本的影响，尚未确认所有触发条件。
+- 若发现重复、错位、无法显示等情况，先禁用其他同类脚本并刷新。
 
-## 排查
+欢迎通过 Issues 反馈可复现的问题，**但不要公开上传含有个人聊天内容的 HAR 文件、完整网络响应、令牌或未脱敏截图**。
 
-**安装提示“清单文件缺失”**：应选择包含 `manifest.json` 的文件夹，而不是 ZIP 本身或上一层目录。
+## 隐私与使用风险
 
-**安装后无效果**：确认已刷新 ChatGPT、油猴旧脚本已禁用、目标确实是 GPT-6 历史回复且网页响应包含 `fallbackMarkdown`。
+- 安装包和仓库不包含开发者的聊天记录、账号凭证或预置的个人资料。
+- 目前代码不含主动向第三方服务器发送聊天内容的功能，也不将聊天记录写入持久化存储。
+- **运行时插件能读取匹配页面的 GET 文本响应，其中可能包含你的个人聊天内容。** 现有监听范围比单独监听特定历史消息接口更广。
+- `world: "MAIN"` 使内容脚本与页面 JavaScript 共享执行环境。因此，“没有申请扩展额外权限”不表示它无权读取页面内容。
+- 软件没有得到 OpenAI 的授权或背书；使用仍可能受到 ChatGPT 服务条款限制。**不保证不存在账户限制或其他风险。**
 
-**出现重复正文或其他回复错位**：停用扩展、刷新页面，并记录重现步骤。不要直接发布原始网络响应，因为可能包含私密对话。
+使用前建议审查源码，并在浏览器中自行决定是否安装。
 
-**如何查看日志**：本地将 `content.js` 中的 `const DEBUG = false` 改成 `true`，在扩展管理页刷新扩展，然后在 ChatGPT 的开发者工具 Console 中筛选 `[GPT6-Fix]`。请在分享前删除日志中的敏感正文。
+## 名称、商标与非官方声明
 
-## 项目结构
+**DIL Reply Fix 为独立项目，并非 OpenAI 官方产品。** 本项目与 OpenAI 没有隶属、合作、赞助或认可关系。
+
+`ChatGPT`、`GPT` 及相关名称属于其各自权利人；项目提及这些名称仅用于说明适用平台、模型标识和兼容性，不表示获得官方授权。请勿使用官方标志或将本项目描述为官方修复工具。
+
+## 作者与开源说明
+
+**作者不是专业软件开发人员，不具备独立编写、审查或维护软件代码的专业能力。** 本项目由作者提出需求、提供测试与反馈，并借助 AI 生成和修改代码。因此，作者无法提供专业级别的安全性、正确性、兼容性或持续维护保证。
+
+本项目以 [MIT License](LICENSE) 提供。它允许其他人在遵守许可证条件的情况下使用、修改和分发源码，但**不能代替 OpenAI 服务条款，也不代表 OpenAI 对扩展的认可或许可**。
+
+## 项目文件
 
 ```text
-chatgpt-gpt6-dil-fix/
-├── manifest.json    # Manifest V3 配置
-├── content.js       # 回复解析、分组及 DOM 恢复
-├── README.md        # 项目说明
+dil-reply-fix/
+├── manifest.json        # Manifest V3 配置
+├── content.js           # 回复数据解析与页面恢复逻辑
+├── README.md            # 项目文档
+├── CHANGELOG.md         # 版本记录
+├── LICENSE              # MIT License
 └── dist/
-    └── GPT6_DIL_Fix_Extension_v1.1.4.zip  # 固定安装包及上方 SHA-256
+    ├── DIL_Reply_Fix_v1.1.5.zip
+    ├── GPT6_DIL_Fix_Extension_v1.1.4.zip
+    └── SHA256SUMS.txt
 ```
 
-## 已知限制
+之前的 v1.1.4 历史 ZIP 会继续保留，但**新用户应优先下载 v1.1.5**。每个固定 ZIP 的哈希均列在 [SHA256SUMS.txt](dist/SHA256SUMS.txt)；这些哈希不适用于 GitHub **Code → Download ZIP** 自动生成的源码包。
 
-- 依赖 ChatGPT 当前的网络响应、DIL 数据结构和 CSS 类名，网站更新后可能失效；
-- 仅用于页面内临时恢复失败内容，不是聊天备份或数据导出工具；
-- Markdown 回退渲染不能完全替代 ChatGPT 原生富 UI；
-- 浏览器端实际下载 `sandbox:` 链接的行为，需要以实际页面验证为准；
-- 尚未在所有 Chromium 版本、所有对话分支与混合模型对话中实测。
-
-## 作者与代码能力说明
-
-**作者并非专业软件开发人员，也不具备独立开发、审计或维护代码的专业能力。** 本项目由作者提出需求并进行实际测试，借助 AI 工具生成与修改代码。作者不提供专业级别的安全性、正确性、兼容性或长期维护保证，使用前请自行检查源码。
-
-## 开发说明
-
-这是个人用途的修复项目，当前未选择开源许可证。**私有仓库不会因存在 README 而自动公开**。
