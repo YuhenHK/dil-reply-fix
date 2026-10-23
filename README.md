@@ -4,6 +4,19 @@
 
 **当前版本：v1.1.5（测试版）**。已在 Brave 中实际验证：插件可以利用页面已收到的备用内容恢复回复正文，并显示常见 Markdown 格式。少数对话首次打开时可能未完整显示，刷新页面通常可以恢复。复杂的原生交互组件目前无法完全还原。
 
+## 重要发现：DIL Runner 加载失败可能是根本原因
+
+> [!IMPORTANT]
+> **遇到 GPT-6 回复“无法加载此回复”，建议先检查 DIL Runner 是否被 CDN 拒绝。**
+>
+> 实测发现：部分故障中，ChatGPT 已收到完整的回复数据，但 `cdn.platform.openai.com` 的 `runner-*.js` 请求返回 **403 Forbidden**，导致原生 DIL 无法正常渲染。**更换能够正常访问该资源的网络线路后，原生回复直接恢复，无需重新生成。**
+>
+> **检查方法：** 打开浏览器开发者工具（F12）→ **Network** → 搜索 `runner-` → 检查 `cdn.platform.openai.com` 的请求状态。若返回 403，优先检查该域名的网络访问；使用支持域名分流的代理软件时，可检查对应线路。
+>
+> **区别：** 恢复 CDN 访问可恢复原生 DIL；**本扩展不能修复 CDN 403**，它在原生显示失败时使用 `fallbackMarkdown` 恢复可读正文。
+
+详细测试记录见 [技术调查与开发踩坑](DEVELOPMENT_NOTES.md#8-dil-runner-cdn-加载故障调查2026-10-23)。
+
 ## 下载与安装
 
 **[下载 DIL Reply Fix v1.1.5 安装包](dist/DIL_Reply_Fix_v1.1.5.zip)**（进入 GitHub 文件页后点击 **Download raw file**）
@@ -43,14 +56,6 @@ Get-FileHash .\DIL_Reply_Fix_v1.1.5.zip -Algorithm SHA256
 **遇到显示不完整时**，可先刷新页面（`Ctrl + R`）。如果出现重复内容或位置错乱，请检查是否同时运行了旧版脚本或其他同类扩展。
 
 欢迎在 Issues 中反馈可复现的问题。请勿提交未脱敏的聊天截图、完整网络响应、HAR 文件或账号凭证。
-
-## DIL Runner 网络加载问题
-
-在一次 GPT-6 原生回复显示失败的排查中，发现 `cdn.platform.openai.com` 的 `runner-*.js` 请求返回 **403 Forbidden**，响应为 HTML 而非 JavaScript。更换可正常访问该资源的网络线路后，原生回复恢复显示，无需重新生成。
-
-遇到类似情况，可在浏览器开发者工具的 **Network** 面板搜索 `runner-`，检查请求状态。使用支持域名分流的代理软件时，可检查 `cdn.platform.openai.com` 对应线路。
-
-**两种方法作用不同**：恢复 Runner 网络访问可以让 ChatGPT 使用原生 DIL 渲染；本扩展则在原生显示失败时，尝试使用 `fallbackMarkdown` 恢复正文。
 
 ## 隐私与工作原理
 
